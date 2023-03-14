@@ -28,22 +28,39 @@ struct DisciplineNode {
     struct DisciplineNode *next;
 };
 
-// Functions
+// Create functions
 struct Student createStudent();
 struct Discipline createDiscipline();
 void appendStudent(struct StudentNode **head);
 void appendDiscipline(struct DisciplineNode **head);
+
+// Display functions
 void showStudents(struct StudentNode *head);
 void showDisciplines(struct DisciplineNode *head);
+
+// Search student functions
 int searchStudent(struct StudentNode *head);
 int findStudentByCode(struct StudentNode *head);
 int findStudentByName(struct StudentNode *head);
 int findStudentByCPF(struct StudentNode *head);
+
+// Search discipline functions
 int searchDiscipline(struct DisciplineNode *head);
 int findDisciplineByCode(struct StudentNode *head);
 int findDisciplineByName(struct StudentNode *head);
 int findDisciplineByCPF(struct StudentNode *head);
+
+// Delete student functions
 void deleteStudent(struct StudentNode **head);
+void deleteStudentByCode(struct StudentNode **head);
+void deleteStudentByName(struct StudentNode **head);
+void deleteStudentByCPF(struct StudentNode **head);
+
+// Delete discipline functions
+void deleteDiscipline(struct DisciplineNode **head);
+void deleteDisciplineByCode(struct DisciplineNode **head);
+void deleteDisciplineByName(struct DisciplineNode **head);
+void deleteDisciplineByCPF(struct DisciplineNode **head);
 
 int main() {
     int option;
@@ -54,7 +71,7 @@ int main() {
     do {
         printf("**********************************\n\n");
         printf("Menu\n\n");
-        printf("1.\tVer lista de alunos\n2.\tVer lista de materias\n3.\tAdicionar aluno\n4.\tAdicionar materiat\n5.\tProcurar aluno\n6.\tSair\n\n");
+        printf("1.\tVer lista de alunos\n2.\tVer lista de materias\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tProcurar disciplina\n7.\tDeletar aluno\n8.\tDeletar disciplina\n9.\tSair\n\n");
         printf("**********************************\n\n");
         printf("Opcao: ");
         scanf("%d", &option);
@@ -75,14 +92,19 @@ int main() {
                 searchStudent(headStudent);
                 break;
             case 6: 
+                // searchDiscipline(headDiscipline);
+                break;
+            case 7: 
                 deleteStudent(&headStudent);
                 break;
-            case 7: break;
+            case 8:
+                // deleteDiscipline(&headDiscipline);
+                break;
             default:
                 printf("Opcao invalida\n");
                 break;
         }
-    } while(option != 7);
+    } while(option != 9);
     return 0;
 }
 
@@ -303,15 +325,13 @@ void deleteStudent(struct StudentNode **head) {
     char name[101];
     char cpf[21];
     do {
-        printf("\n\nA.\tDeletar aluno por código\nB.\tDeletar aluno por nome\nC.\tDeletar aluno por CPF\nD.\tCancelar\n\n");
+        printf("\n\nA.\tDeletar aluno por codigo\nB.\tDeletar aluno por nome\nC.\tDeletar aluno por CPF\nD.\tCancelar\n\n");
         printf("Como deseja deletar o aluno? ");
         fflush(stdin);
         scanf(" %c", &method);
         switch (method) {
             case 'A':
-                printf("Insira o código do aluno a ser deletado: ");
-                fflush(stdin);
-                scanf(" %s", code);
+                deleteStudentByCode(head);
                 break;
             case 'B':
                 printf("Insira o nome do aluno a ser deletado: ");
@@ -324,8 +344,36 @@ void deleteStudent(struct StudentNode **head) {
                 scanf(" %s", cpf);
                 break;
             default:
-                printf("Opção inválida");
+                printf("Opcao invalida");
                 break;
             }
     } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
+}
+
+void deleteStudentByCode(struct StudentNode **head) {
+    struct StudentNode *aux = *head;
+    char code[5];
+    printf("Insira o codigo do aluno a ser deletado: ");
+    fflush(stdin);
+    scanf(" %s", code);
+    if (*head == NULL) {
+        printf("\nLista vazia\n");
+    }
+    if (strcmp((*head)->info.code, code) == 0) {
+        struct StudentNode *temp = *head;
+        *head = (*head)->next;
+        free(temp);
+        return;
+    }
+    struct StudentNode *current = *head;
+    while (current->next != NULL) {
+        if (strcmp(current->next->info.code, code) == 0) {
+            struct StudentNode *temp = current->next;
+            current->next = temp->next;
+            free(temp);
+            return;
+        }
+        current = current->next;
+    }
+    printf("\nAluno nao encontrado\n");
 }
