@@ -40,22 +40,23 @@ int findStudentByCode(struct StudentNode *head);
 int findStudentByName(struct StudentNode *head);
 int findStudentByCPF(struct StudentNode *head);
 int searchDiscipline(struct DisciplineNode *head);
-int findDisciplineByCode(struct StudentNode *head);
-int findDisciplineByName(struct StudentNode *head);
-int findDisciplineByCPF(struct StudentNode *head);
+int findDisciplineByCode(struct DisciplineNode *head);
+int findDisciplineByName(struct DisciplineNode *head);
+int findDisciplineByTeacher(struct DisciplineNode *head);
 void deleteStudent(struct StudentNode **head);
+void spacingLine(int quantity, int spacingBefore, int spacingAfter);
 
 int main() {
     int option;
     struct StudentNode *headStudent = NULL;
     struct DisciplineNode *headDiscipline = NULL;
-    printf("\n**********************************\n\n");
-    printf("Seja bem vindo ao GRANITO desenvolvido pelos alunos Luiz Guilherme Amadi Braga e Alexandre de Paiva Almeida!\n\n");
+    spacingLine(35, 1, 2);
+    printf("Seja bem vindo ao GRANITO\n\n");
     do {
-        printf("**********************************\n\n");
+        spacingLine(35, 0, 2);
         printf("Menu\n\n");
-        printf("1.\tVer lista de alunos\n2.\tVer lista de materias\n3.\tAdicionar aluno\n4.\tAdicionar materiat\n5.\tProcurar aluno\n6.\tSair\n\n");
-        printf("**********************************\n\n");
+        printf("1.\tVer lista de alunos\n2.\tVer lista de disciplinas\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tSair\n\n");
+        spacingLine(35, 0, 2);
         printf("Opcao: ");
         scanf("%d", &option);
         switch(option) {
@@ -91,7 +92,7 @@ struct Student createStudent() {
     char name[101];
     char cpf[21];
     struct Student student;
-    printf("\n**********************************\n\n");
+    spacingLine(35, 1, 2);
     printf("Insira o codigo do aluno: ");
     fflush(stdin);
     scanf(" %s", code);
@@ -170,7 +171,7 @@ void appendDiscipline(struct DisciplineNode **head) {
 
 void showStudents(struct StudentNode *head) {
     if(head == NULL) {
-        printf("\n**********************************\n\n");
+        spacingLine(35, 1, 2);
         printf("Nao ha alunos cadastrados\n\n");
     }
     while(head != NULL) {
@@ -181,7 +182,7 @@ void showStudents(struct StudentNode *head) {
 
 void showDisciplines(struct DisciplineNode *head) {
     if(head == NULL) {
-        printf("\n**********************************\n\n");
+        spacingLine(35, 1, 2);
         printf("Nao ha disciplinas cadastradas\n\n");
     }
     while(head != NULL) {
@@ -218,7 +219,7 @@ int searchStudent(struct StudentNode *head) {
 int findStudentByCode(struct StudentNode *head){
     struct StudentNode *aux = head;
     char code[5];
-    printf("\n**********************************\n\n");
+    spacingLine(35, 1, 2);
     printf("Insira o codigo do aluno a procurar: ");
     fflush(stdin);
     scanf(" %s", code);
@@ -297,6 +298,90 @@ int findStudentByCPF(struct StudentNode *head) {
     }
 }
 
+int findDisciplineByCode(struct DisciplineNode *head){
+    struct DisciplineNode *aux = head;
+    char code[5];
+    spacingLine(35, 1, 2);
+    printf("Insira o codigo da disciplina a procurar: ");
+    fflush(stdin);
+    scanf(" %s", code);
+    if (head == NULL) {
+        printf("\nLista vazia\n");
+    }
+    while(head != NULL) {
+        if(strcmp(head->info.code, code) == 0) {
+            printf("\nDisciplina encontrada:\n");
+            printf("Codigo: %s\nNome: %s\nProfessor: %s\n\n", head->info.code, head->info.name, head->info.teacher);
+            head = aux;
+            return 1;
+            break;
+        } else {
+            head = head->next;
+        }
+    }
+    if(head == NULL) {
+        printf("\nDisciplina nao encontrada");
+        head = aux;
+        return 0;
+    }
+}
+
+int findDisciplineByName(struct DisciplineNode *head){
+    struct DisciplineNode *aux = head;
+    char name[101];
+    spacingLine(35, 1, 2);
+    printf("Insira o nome da disciplina a procurar: ");
+    fflush(stdin);
+    scanf(" %s", name);
+    if (head == NULL) {
+        printf("\nLista vazia\n");
+    }
+    while(head != NULL) {
+        if(strcmp(head->info.name, name) == 0) {
+            printf("\nDisciplina encontrada:\n");
+            printf("Codigo: %s\nNome: %s\nProfessor: %s\n\n", head->info.code, head->info.name, head->info.teacher);
+            head = aux;
+            return 1;
+            break;
+        } else {
+            head = head->next;
+        }
+    }
+    if(head == NULL) {
+        printf("\nDisciplina nao encontrada");
+        head = aux;
+        return 0;
+    }
+}
+int findDisciplineByTeacher(struct DisciplineNode *head){
+    struct DisciplineNode *aux = head;
+    char teacher[101];
+    spacingLine(35, 1, 2);
+    printf("Insira o nome do professor da disciplina a procurar: ");
+    fflush(stdin);
+    scanf(" %s", teacher);
+    if (head == NULL) {
+        printf("\nLista vazia\n");
+    }
+    while(head != NULL) {
+        if(strcmp(head->info.teacher, teacher) == 0) {
+            printf("\nDisciplina encontrada:\n");
+            printf("Codigo: %s\nNome: %s\nProfessor: %s\n\n", head->info.code, head->info.name, head->info.teacher);
+            head = aux;
+            return 1;
+            break;
+        } else {
+            head = head->next;
+        }
+    }
+    if(head == NULL) {
+        printf("\nDisciplina nao encontrada");
+        head = aux;
+        return 0;
+    }
+}
+
+
 void deleteStudent(struct StudentNode **head) {
     char method;
     char code[5];
@@ -328,4 +413,22 @@ void deleteStudent(struct StudentNode **head) {
                 break;
             }
     } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
+}
+
+void spacingLine(int quantity, int spacingBefore, int spacingAfter){
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    while (i < spacingBefore){
+        printf("\n");
+        i++;
+    }
+    while (j < quantity){
+        printf("*");
+        j++;
+    }
+    while (k < spacingAfter){
+        printf("\n");
+        k++;
+    }
 }
