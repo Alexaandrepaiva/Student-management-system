@@ -35,7 +35,9 @@ void appendStudent(struct StudentNode **head);
 void appendDiscipline(struct DisciplineNode **head);
 void showStudents(struct StudentNode *head);
 void showDisciplines(struct DisciplineNode *head);
-int findStudent(struct StudentNode *head);
+int searchStudent(struct StudentNode *head);
+int searchDiscipline(struct DisciplineNode *head);
+void deleteStudent(struct StudentNode **head);
 
 int main() {
     int option;
@@ -43,7 +45,7 @@ int main() {
     struct DisciplineNode *headDiscipline = NULL;
     do {
         printf("Menu\n\n");
-        printf("1.\tVer lista de alunos\n2.\tVer lista de matérias\n3.\tAdicionar aluno\n4.\tAdicionar matériat\n5.\tProcurar aluno\n6.\tSair\n\n");
+        printf("1.\tVer lista de alunos\n2.\tVer lista de matérias\n3.\tAdicionar aluno\n4.\tAdicionar matériat\n5.\tProcurar aluno\n6.\tDeletar aluno\n7.\tSair\n\n");
         printf("Opção: ");
         scanf("%d", &option);
         switch(option) {
@@ -62,12 +64,15 @@ int main() {
             case 5: 
                 findStudent(headStudent);
                 break;
-            case 6: break;
+            case 6: 
+                deleteStudent(&headStudent);
+                break;
+            case 7: break;
             default:
                 printf("Opção inválida\n");
                 break;
         }
-    } while(option != 6);
+    } while(option != 7);
     return 0;
 }
 
@@ -172,7 +177,7 @@ void showDisciplines(struct DisciplineNode *head) {
     }
 }
 
-int findStudent(struct StudentNode *head) {
+int searchStudent(struct StudentNode *head) {
     struct StudentNode *aux = head;
     char method;
     char code[5];
@@ -258,6 +263,39 @@ int findStudent(struct StudentNode *head) {
                     head = aux;
                     return 0;
                 }
+                break;
+            default:
+                printf("Opção inválida");
+                break;
+            }
+    } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
+}
+
+void deleteStudent(struct StudentNode **head) {
+    char method;
+    char code[5];
+    char name[101];
+    char cpf[21];
+    do {
+        printf("\n\nA.\tDeletar aluno por código\nB.\tDeletar aluno por nome\nC.\tDeletar aluno por CPF\nD.\tCancelar\n\n");
+        printf("Como deseja deletar o aluno? ");
+        fflush(stdin);
+        scanf("%c", &method);
+        switch (method) {
+            case 'A':
+                printf("Insira o código do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%s", code);
+                break;
+            case 'B':
+                printf("Insira o nome do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%[^\n]s", name);
+                break;
+            case 'C':
+                printf("Insira o CPF do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%s", cpf);
                 break;
             default:
                 printf("Opção inválida");
