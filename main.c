@@ -40,6 +40,11 @@ int searchStudent(struct StudentNode *head);
 int findStudentByCode(struct StudentNode *head);
 int findStudentByName(struct StudentNode *head);
 int findStudentByCPF(struct StudentNode *head);
+int searchDiscipline(struct DisciplineNode *head);
+int findDisciplineByCode(struct StudentNode *head);
+int findDisciplineByName(struct StudentNode *head);
+int findDisciplineByCPF(struct StudentNode *head);
+void deleteStudent(struct StudentNode **head);
 
 int main() {
     int option;
@@ -67,13 +72,15 @@ int main() {
             case 5: 
                 searchStudent(headStudent);
                 break;
-            case 6: break;
+            case 6: 
+                deleteStudent(&headStudent);
+                break;
+            case 7: break;
             default:
                 printf("Opcao invalida\n");
                 break;
         }
-    } while(option != 6);
-    system("pause");
+    } while(option != 7);
     return 0;
 }
 
@@ -250,12 +257,12 @@ int searchStudent(struct StudentNode *head) {
     } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
 }
 
-int findStudentByCode(){
+int findStudentByCode(struct StudentNode *head){
     char code[5];
     printf("Insira o codigo do aluno a procurar: ");
                 fflush(stdin);
                 scanf("%s", code);
-                if(head == NULL) {
+                if (head == NULL) {
                     printf("\nLista vazia\n");
                     break;
                 }
@@ -274,5 +281,37 @@ int findStudentByCode(){
                     printf("\nAluno nao encontrado");
                     head = aux;
                     return 0;
-                }
+}
+
+void deleteStudent(struct StudentNode **head) {
+    char method;
+    char code[5];
+    char name[101];
+    char cpf[21];
+    do {
+        printf("\n\nA.\tDeletar aluno por código\nB.\tDeletar aluno por nome\nC.\tDeletar aluno por CPF\nD.\tCancelar\n\n");
+        printf("Como deseja deletar o aluno? ");
+        fflush(stdin);
+        scanf("%c", &method);
+        switch (method) {
+            case 'A':
+                printf("Insira o código do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%s", code);
+                break;
+            case 'B':
+                printf("Insira o nome do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%[^\n]s", name);
+                break;
+            case 'C':
+                printf("Insira o CPF do aluno a ser deletado: ");
+                fflush(stdin);
+                scanf("%s", cpf);
+                break;
+            default:
+                printf("Opção inválida");
+                break;
+            }
+    } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
 }
