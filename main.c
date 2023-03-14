@@ -38,6 +38,8 @@ void showStudents(struct StudentNode *head);
 void showDisciplines(struct DisciplineNode *head);
 int searchStudent(struct StudentNode *head);
 int findStudentByCode(struct StudentNode *head);
+int findStudentByName(struct StudentNode *head);
+int findStudentByCPF(struct StudentNode *head);
 
 int main() {
     int option;
@@ -180,7 +182,6 @@ void showDisciplines(struct DisciplineNode *head) {
 int searchStudent(struct StudentNode *head) {
     struct StudentNode *aux = head;
     char method;
-    char code[5];
     char name[101];
     char cpf[21];
     do {
@@ -190,29 +191,7 @@ int searchStudent(struct StudentNode *head) {
         scanf("%c", &method);
         switch (method) {
             case 'A':
-                printf("Insira o codigo do aluno a procurar: ");
-                fflush(stdin);
-                scanf("%s", code);
-                if(head == NULL) {
-                    printf("\nLista vazia\n");
-                    break;
-                }
-                while(head != NULL) {
-                    if(strcmp(head->info.code, code) == 0) {
-                        printf("\nAluno encontrado:\n");
-                        printf("Codigo: %s\nNome: %s\nCPF: %s\n\n", head->info.code, head->info.name, head->info.cpf);
-                        head = aux;
-                        return 1;
-                        break;
-                    } else {
-                        head = head->next;
-                    }
-                }
-                if(head == NULL) {
-                    printf("\nAluno nao encontrado");
-                    head = aux;
-                    return 0;
-                }
+                findStudentByCode(head);
                 break;
             case 'B':
                 printf("Insira o nome do aluno a procurar: ");
@@ -269,4 +248,31 @@ int searchStudent(struct StudentNode *head) {
                 break;
             }
     } while(method != 'A' && method != 'B' && method != 'C' && method != 'D');
+}
+
+int findStudentByCode(){
+    char code[5];
+    printf("Insira o codigo do aluno a procurar: ");
+                fflush(stdin);
+                scanf("%s", code);
+                if(head == NULL) {
+                    printf("\nLista vazia\n");
+                    break;
+                }
+                while(head != NULL) {
+                    if(strcmp(head->info.code, code) == 0) {
+                        printf("\nAluno encontrado:\n");
+                        printf("Codigo: %s\nNome: %s\nCPF: %s\n\n", head->info.code, head->info.name, head->info.cpf);
+                        head = aux;
+                        return 1;
+                        break;
+                    } else {
+                        head = head->next;
+                    }
+                }
+                if(head == NULL) {
+                    printf("\nAluno nao encontrado");
+                    head = aux;
+                    return 0;
+                }
 }
