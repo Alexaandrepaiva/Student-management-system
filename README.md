@@ -15,4 +15,4 @@ All structures must be dynamically allocated, insertion and removal options must
 Finally, the system must allow saving and recovering of data between sessions.
 
 ## Execution
-To execute de code in the terminal, first, use the command $gcc main.c func.o -o main.exe$ and, then, use the command $.\main.exe$. In case of changes in the library, use the command $gcc -o func.o func.c -c$.
+To execute de code in the terminal, first, use the command `gcc main.c func.o -o main.exe` and, then, use the command `.\main.exe`. In case of changes in the library, use the command `gcc -o func.o func.c -c`.
