@@ -4,6 +4,28 @@
 
 #include "func.h"
 
+struct Student createStudent()
+{
+    char code[5];
+    char name[101];
+    char cpf[21];
+    struct Student student;
+    spacingLine(35, 1, 2);
+    printf("Insira o codigo do aluno: ");
+    fflush(stdin);
+    scanf(" %s", code);
+    printf("Insira o nome do aluno: ");
+    fflush(stdin);
+    scanf(" %[^\n]s", name);
+    printf("Insira o CPF do aluno (somente numeros): ");
+    fflush(stdin);
+    scanf(" %s", cpf);
+    strcpy(student.code, code);
+    strcpy(student.name, name);
+    strcpy(student.cpf, cpf);
+    return student;
+}
+
 struct Discipline createDiscipline()
 {
     char code[5];
