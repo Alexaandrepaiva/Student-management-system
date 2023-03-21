@@ -15,7 +15,7 @@ int main()
     {
         spacingLine(35, 0, 2);
         printf("Menu\n\n");
-        printf("1.\tVer lista de alunos\n2.\tVer lista de materias\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tProcurar disciplina\n7.\tDeletar aluno\n8.\tDeletar disciplina\n9.\tSair\n\n");
+        printf("1.\tVer lista de alunos\n2.\tVer lista de disciplinas\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tProcurar disciplina\n7.\tDeletar aluno\n8.\tDeletar disciplina\n9.\tSair\n\n");
         spacingLine(35, 0, 2);
         printf("Opcao: ");
         scanf("%d", &option);
