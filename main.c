@@ -13,6 +13,7 @@ University: IME, Rio de Janeiro, Brazil
 #define DISCIPLINE_CODE_SIZE 5
 #define NAME_SIZE 101
 #define CPF_SIZE 21
+#define PERIOD_SIZE 7
 #define endl printf("\n")
 
 // Structs
@@ -38,6 +39,7 @@ typedef struct Discipline {
     char name[NAME_SIZE];
     char teacher[NAME_SIZE];
     int credits;
+    char period[PERIOD_SIZE];
     int studentsLength;
     struct StudentNode *currentStudents;
 } Discipline;
@@ -78,6 +80,7 @@ void appendDiscipline(DisciplineNode **head);
 int searchDiscipline(DisciplineNode *head);
 int deleteDiscipline(DisciplineNode **head);
 void showStudentsFromDisciplineCode(DisciplineNode *head);
+void showDisciplinesFromPeriod(StudentNode *head);
 
 // Specific searching discipline functions
 int findDisciplineByCode(DisciplineNode *head);
@@ -101,7 +104,7 @@ int main() {
     do {
         spacingLine(35, 0, 2);
         printf("Menu\n\n");
-        printf("1.\tVer lista de alunos\n2.\tVer lista de disciplinas\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tProcurar disciplina\n7.\tDeletar aluno\n8.\tDeletar disciplina\n9.\tAdicionar disciplina a aluno\n10.\tDisciplinas de um aluno\n11.\tAlunos de uma disciplina\n12.\tSair\n\n");
+        printf("1.\tVer lista de alunos\n2.\tVer lista de disciplinas\n3.\tAdicionar aluno\n4.\tAdicionar disciplina\n5.\tProcurar aluno\n6.\tProcurar disciplina\n7.\tDeletar aluno\n8.\tDeletar disciplina\n9.\tAdicionar disciplina a aluno\n10.\tDisciplinas de um aluno\n11.\tAlunos de uma disciplina\n12.\tDisciplinas de um periodo\n13.\tAlunos de um periodo\n14.\tSair\n\n");
         spacingLine(35, 0, 2);
         printf("Opcao: ");
         scanf("%d", &option);
@@ -140,6 +143,12 @@ int main() {
                 showStudentsFromDisciplineCode(headDiscipline);
                 break;
             case 12:
+                showDisciplinesFromPeriod(headStudent);
+                break;
+            case 13:
+
+                break;
+            case 14:
                 break;
             default:
                 printf("Opcao invalida\n");
@@ -473,6 +482,7 @@ int deleteStudentByCPF(StudentNode **head) {
 
 // Shows every discipline a student is registered
 void showDisciplinesFromStudentCode(StudentNode *head) {
+    StudentNode *auxStudent = head;
     char code[STUDENT_CODE_SIZE];
     printf("Insira o codigo do aluno: ");
     fflush(stdin);
@@ -484,6 +494,7 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
     int found = 0;
     while(head != NULL) {
         if(strcmp(head->info.code, code) == 0) {
+            DisciplineNode *auxDiscipline = head->info.currentDisciplines;
             found = 1;
             printf("\n%s\tAluno: %s\n\n", head->info.code, head->info.name);
             printf("Disciplinas:\n");
@@ -492,14 +503,15 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
                 return;
             }
             while(head->info.currentDisciplines != NULL) {
-                printf("%s\t%s, Professor: %s\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name, head->info.currentDisciplines->info.teacher);
+                printf("%s\t%s, Professor: %s, Periodo: %s\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name, head->info.currentDisciplines->info.teacher, head->info.currentDisciplines->info.period);
                 head->info.currentDisciplines = head->info.currentDisciplines->next;
             }
+            head->info.currentDisciplines = auxDiscipline;
             printf("\n");
-            break;
         }
         head = head->next;
     }
+    head = auxStudent;
 }
 
 
@@ -527,6 +539,7 @@ Discipline createDiscipline() {
     strcpy(discipline.code, code);
     strcpy(discipline.name, name);
     strcpy(discipline.teacher, teacher);
+    strcpy(discipline.period, "----.-");
     discipline.credits = credits;
     discipline.studentsLength = 0;
     discipline.currentStudents = NULL;
@@ -835,6 +848,7 @@ int deleteDisciplineByTeacher(DisciplineNode **head) {
 
 // Shows every student registered in a discipline
 void showStudentsFromDisciplineCode(DisciplineNode *head) {
+    DisciplineNode *auxDiscipline = head;
     char code[DISCIPLINE_CODE_SIZE];
     printf("Insira o codigo da disciplina: ");
     fflush(stdin);
@@ -846,21 +860,53 @@ void showStudentsFromDisciplineCode(DisciplineNode *head) {
     int found = 0;
     while(head != NULL) {
         if(strcmp(head->info.code, code) == 0) {
+            StudentNode *auxStudent = head->info.currentStudents;
             found = 1;
             printf("\n%s\tDisciplina: %s\n\n", head->info.code, head->info.name);
             printf("Alunos:\n");
             if(head->info.currentStudents == NULL) {
-                printf("Nao ha disciplinas\n");
+                printf("Nao ha alunos\n");
                 return;
             }
             while(head->info.currentStudents != NULL) {
                 printf("%s\t%s\n", head->info.currentStudents->info.code, head->info.currentStudents->info.name);
                 head->info.currentStudents = head->info.currentStudents->next;
             }
+            head->info.currentStudents = auxStudent;
             printf("\n");
-            break;
         }
         head = head->next;
+    }
+    head = auxDiscipline;
+}
+
+void showDisciplinesFromPeriod(StudentNode *head) {
+    char period[PERIOD_SIZE];
+    printf("Insira o periodo: ");
+    fflush(stdin);
+    scanf(" %s", period);
+    if(head == NULL) { // Empty list
+        printf("Nao ha disciplinas cadastradas em periodos");
+        return;
+    }
+    int found = 0;
+    while(head != NULL) {
+        if(head->info.disciplinesLength != 0) {
+            while(head->info.currentDisciplines != NULL) {
+                if(strcmp(head->info.currentDisciplines->info.period, period) == 0) {
+                    if(!found) {
+                        printf("\nDisciplinas:\n\n");
+                    }
+                    printf("\n%s\tDisciplina: %s\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name);
+                    found = 1;
+                }
+                head->info.currentDisciplines = head->info.currentDisciplines->next;
+            }
+        }        
+        head = head->next;
+    }
+    if(!found) {
+        printf("\nNao ha disciplinas no periodo selecionado\n");
     }
 }
 
@@ -868,26 +914,32 @@ void showStudentsFromDisciplineCode(DisciplineNode *head) {
 
 // Updates students current disciplines and also discipline current students
 int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline) {
-    char studentName[NAME_SIZE];
-    char disciplineName[NAME_SIZE];
-    printf("Para cadastrar uma disciplina a um aluno, insira:\n1. Nome do aluno: ");
+    char studentCode[STUDENT_CODE_SIZE];
+    char disciplineCode[DISCIPLINE_CODE_SIZE];
+    char period[PERIOD_SIZE];
+    printf("Para cadastrar uma disciplina a um aluno, insira:\n1. Codigo do aluno: ");
     fflush(stdin);
-    scanf(" %[^\n]s", studentName);
-    printf("2. Nome da disciplina: ");
-    scanf(" %[^\n]s", disciplineName);
+    scanf(" %[^\n]s", studentCode);
+    printf("2. Codigo da disciplina: ");
+    fflush(stdin);
+    scanf(" %[^\n]s", disciplineCode);
+    printf("3. Periodo: ");
+    fflush(stdin);
+    scanf(" %[^\n]s", period);
     if(headStudent == NULL || headDiscipline == NULL) { // Empty list
         printf("\nAlguma das listas é vazia\n");
         return 0;
     }
     int updated = -1;
     while(headDiscipline != NULL) {
-        if(strcmp(headDiscipline->info.name, disciplineName) == 0) {
+        if(strcmp(headDiscipline->info.code, disciplineCode) == 0) {
             updated = 0;
             while(headStudent != NULL) {
-                if(strcmp(headStudent->info.name, studentName) == 0) {
+                if(strcmp(headStudent->info.code, studentCode) == 0) {
                     headStudent->info.disciplinesLength++;
                     DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode));
                     newDiscipline->info = headDiscipline->info;
+                    strcpy(newDiscipline->info.period, period);
                     newDiscipline->next = NULL;
                     if(headStudent->info.currentDisciplines == NULL) {
                         headStudent->info.currentDisciplines = newDiscipline;
