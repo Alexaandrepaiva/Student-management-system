@@ -59,6 +59,7 @@ void appendStudent(StudentNode **head);
 int searchStudent(StudentNode *head);
 int deleteStudent(StudentNode **head);
 void showDisciplinesFromStudentCode(StudentNode *head);
+void showStudentsFromPeriod(StudentNode *head);
 
 // Specific searching student functions
 int findStudentByCode(StudentNode *head);
@@ -146,7 +147,7 @@ int main() {
                 showDisciplinesFromPeriod(headStudent);
                 break;
             case 13:
-
+                showStudentsFromPeriod(headStudent);
                 break;
             case 14:
                 break;
@@ -154,7 +155,7 @@ int main() {
                 printf("Opcao invalida\n");
                 break;
         }
-    } while(option != 12);
+    } while(option != 14);
     return 0;
 }
 
@@ -512,6 +513,43 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
         head = head->next;
     }
     head = auxStudent;
+}
+
+// Shows every student registered into a discipline in certain period
+void showStudentsFromPeriod(StudentNode *head) {
+    StudentNode *auxStudent = head;
+    char period[PERIOD_SIZE];
+    printf("Insira o periodo: ");
+    fflush(stdin);
+    scanf(" %s", period);
+    if(head == NULL) { // Empty list
+        printf("Nao ha alunos cadastradas em periodos");
+        return;
+    }
+    int found = 0;
+    while(head != NULL) {
+        if(head->info.disciplinesLength != 0) {
+            DisciplineNode *auxDiscipline = head->info.currentDisciplines;
+            while(head->info.currentDisciplines != NULL) {
+                if(strcmp(head->info.currentDisciplines->info.period, period) == 0) {
+                    if(!found) {
+                        printf("\nAlunos:\n\n");
+                    }
+                    printf("\n%s\tNome: %s", head->info.code, head->info.name);
+                    found = 1;
+                    break;
+                }
+                head->info.currentDisciplines = head->info.currentDisciplines->next;
+            }
+            head->info.currentDisciplines = auxDiscipline;
+        }        
+        head = head->next;
+    }
+    head = auxStudent;
+    printf("\n\n");
+    if(!found) {
+        printf("\nNao ha alunos no periodo selecionado\n");
+    }
 }
 
 
@@ -880,7 +918,9 @@ void showStudentsFromDisciplineCode(DisciplineNode *head) {
     head = auxDiscipline;
 }
 
+// Shows every discipline from certain period
 void showDisciplinesFromPeriod(StudentNode *head) {
+    StudentNode *auxStudent = head;
     char period[PERIOD_SIZE];
     printf("Insira o periodo: ");
     fflush(stdin);
@@ -892,19 +932,23 @@ void showDisciplinesFromPeriod(StudentNode *head) {
     int found = 0;
     while(head != NULL) {
         if(head->info.disciplinesLength != 0) {
+            DisciplineNode *auxDiscipline = head->info.currentDisciplines;
             while(head->info.currentDisciplines != NULL) {
                 if(strcmp(head->info.currentDisciplines->info.period, period) == 0) {
                     if(!found) {
                         printf("\nDisciplinas:\n\n");
                     }
-                    printf("\n%s\tDisciplina: %s\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name);
+                    printf("\n%s\tDisciplina: %s", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name);
                     found = 1;
                 }
                 head->info.currentDisciplines = head->info.currentDisciplines->next;
             }
+            head->info.currentDisciplines = auxDiscipline;
         }        
         head = head->next;
     }
+    head = auxStudent;
+    printf("\n\n");
     if(!found) {
         printf("\nNao ha disciplinas no periodo selecionado\n");
     }
