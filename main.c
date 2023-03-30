@@ -14,6 +14,7 @@ University: IME, Rio de Janeiro, Brazil
 #define NAME_SIZE 101
 #define CPF_SIZE 21
 #define PERIOD_SIZE 7
+#define LINE_SIZE 221
 #define endl printf("\n")
 
 // Structs
@@ -56,6 +57,7 @@ typedef struct DisciplineNode {
 Student createStudent();
 void showStudents(StudentNode *head);
 void appendStudent(StudentNode **head);
+void pushStudent(StudentNode **head, Student student);
 int searchStudent(StudentNode *head);
 int deleteStudent(StudentNode **head);
 void showDisciplinesFromStudentCode(StudentNode *head);
@@ -78,6 +80,7 @@ int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline);
 Discipline createDiscipline();
 void showDisciplines(DisciplineNode *head);
 void appendDiscipline(DisciplineNode **head);
+void pushDiscipline(DisciplineNode **head, Discipline discipline);
 int searchDiscipline(DisciplineNode *head);
 int deleteDiscipline(DisciplineNode **head);
 void showStudentsFromDisciplineCode(DisciplineNode *head);
@@ -93,6 +96,11 @@ int deleteDisciplineByCode(DisciplineNode **head);
 int deleteDisciplineByName(DisciplineNode **head);
 int deleteDisciplineByTeacher(DisciplineNode **head);
 
+// Sessions functions
+void initializeSession(StudentNode **headStudent, DisciplineNode **headDiscipline);
+void writeStudentsFile(StudentNode *head);
+void writeDisciplinesFile(DisciplineNode *head);
+
 // Other functions
 void spacingLine(int Length, int spacingBefore, int spacingAfter);
 
@@ -100,6 +108,7 @@ int main() {
     int option;
     StudentNode *headStudent = NULL;
     DisciplineNode *headDiscipline = NULL;
+    initializeSession(&headStudent, &headDiscipline);
     spacingLine(35, 1, 2);
     printf("Seja bem vindo ao GRANITO\n\n");
     do {
@@ -150,6 +159,8 @@ int main() {
                 showStudentsFromPeriod(headStudent);
                 break;
             case 14:
+                writeStudentsFile(headStudent);
+                writeDisciplinesFile(headDiscipline);
                 break;
             default:
                 printf("Opcao invalida\n");
@@ -202,6 +213,22 @@ void appendStudent(StudentNode **head) {
     }
     lastNode->next = newStudent;
     printf("\nAluno criado com sucesso!\n\n");
+}
+
+// Pushes student at the end of the list (student as parameter)
+void pushStudent(StudentNode **head, Student student) {
+    StudentNode *newStudent = (StudentNode*)malloc(sizeof(StudentNode));
+    newStudent->info = student;
+    newStudent->next = NULL;
+    if(*head == NULL) { // Empty student list
+        *head = newStudent;
+        return;
+    }
+    StudentNode *lastNode = *head;
+    while(lastNode->next != NULL) {
+        lastNode = lastNode->next;
+    }
+    lastNode->next = newStudent;
 }
 
 // Displays every registered student
@@ -603,6 +630,22 @@ void appendDiscipline(DisciplineNode **head) {
     printf("\nDisciplina criada com sucesso!\n\n");
 }
 
+// Pushes discipline to the end of the list (discipline as parameter)
+void pushDiscipline(DisciplineNode **head, Discipline discipline) {
+    DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode));
+    newDiscipline->info = discipline;
+    newDiscipline->next = NULL;
+    if(*head == NULL) { // Empty discipline list
+        *head = newDiscipline;
+        return;
+    }
+    DisciplineNode *lastNode = *head;
+    while (lastNode->next != NULL) {
+        lastNode = lastNode->next;
+    }
+    lastNode->next = newDiscipline;
+}
+
 // Displays every registered discipline
 void showDisciplines(DisciplineNode *head) {
     if(head == NULL) { // Empty discipline list
@@ -666,7 +709,7 @@ int findDisciplineByCode(DisciplineNode *head) {
                 printf("%-20s%-30s%-30s%-20s%-20s\n", "Codigo", "Nome", "Professor", "Creditos", "Alunos");
                 found = 1;
             }
-            printf("%-20s%-30s%-30s%-20s%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.studentsLength);
+            printf("%-20s%-30s%-30s%-20d%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.credits, head->info.studentsLength);
         }
         printf("\n");
         head = head->next;
@@ -699,7 +742,7 @@ int findDisciplineByName(DisciplineNode *head) {
                 printf("%-20s%-30s%-30s%-20s%-20s\n", "Codigo", "Nome", "Professor", "Creditos", "Alunos");
                 found = 1;
             }
-            printf("%-20s%-30s%-30s%-20s%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.studentsLength);
+            printf("%-20s%-30s%-30s%-20d%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.credits, head->info.studentsLength);
         }
         printf("\n");
         head = head->next;
@@ -732,7 +775,7 @@ int findDisciplineByTeacher(DisciplineNode *head) {
                 printf("%-20s%-30s%-30s%-20s%-20s\n", "Codigo", "Nome", "Professor", "Creditos", "Alunos");
                 found = 1;
             }
-            printf("%-20s%-30s%-30s%-20s%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.studentsLength);
+            printf("%-20s%-30s%-30s%-20d%-20d\n", head->info.code, head->info.name, head->info.teacher, head->info.credits, head->info.studentsLength);
         }
         printf("\n");
         head = head->next;
@@ -1023,6 +1066,105 @@ int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline) 
     } else {
         printf("\nO aluno foi atualizado com sucesso\n\n");
         return 1;
+    }
+}
+
+// ***** Session funcions *****
+void writeStudentsFile(StudentNode *head) {
+    StudentNode *auxStudent = head;
+    FILE *fp;
+    fp = fopen("Alunos.txt", "w");
+    if(fp == NULL) {
+        return;
+    }
+    if(head == NULL) { // Empty list
+        fprintf(fp, "%s", "Nao ha alunos cadastrados");
+        return;
+    }
+    while(head != NULL) {
+        fprintf(fp, "%s,%s,%s,%d\n", head->info.code, head->info.name, head->info.cpf, head->info.disciplinesLength);
+        if(head->info.disciplinesLength == 0) {
+            fprintf(fp, "%s", "Sem disciplinas\n");
+        } else {
+            DisciplineNode *aux = head->info.currentDisciplines;
+            while(head->info.currentDisciplines != NULL) {
+                fprintf(fp, "%s,%s,%s,%d,%s\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name, head->info.currentDisciplines->info.teacher, head->info.currentDisciplines->info.credits, head->info.currentDisciplines->info.period);
+                head->info.currentDisciplines = head->info.currentDisciplines->next;
+            }
+        }
+        head = head->next;
+    }
+    head = auxStudent;
+    fclose(fp);
+}
+
+void writeDisciplinesFile(DisciplineNode *head) {
+    DisciplineNode *auxDiscipline = head;
+    FILE *fp;
+    fp = fopen("Disciplinas.txt", "w");
+    if(fp == NULL) {
+        return;
+    }
+    if(head == NULL) {
+        fprintf(fp, "%s", "Nao ha disciplinas cadastradas");
+        return;
+    }
+    while(head != NULL) {
+        fprintf(fp, "%s,%s,%s,%d\n", head->info.code, head->info.name, head->info.teacher, head->info.credits, head->info.credits);
+        if(head->info.studentsLength == 0) {
+            fprintf(fp, "%s\n", "Sem alunos");
+        } else {
+            StudentNode *auxStudent = head->info.currentStudents;
+            while(head->info.currentStudents != NULL) {
+                fprintf(fp, "%s,%s,%s\n", head->info.currentStudents->info.code, head->info.currentStudents->info.name, head->info.currentStudents->info.cpf);
+                head->info.currentStudents = head->info.currentStudents->next;
+            }
+        }
+        head = head->next;
+    }
+    head = auxDiscipline;
+    fclose(fp);
+}
+
+void initializeSession(StudentNode **headStudent, DisciplineNode **headDiscipline) {
+    char line[LINE_SIZE];
+    FILE *fpStudents;
+    FILE *fpDisciplines;
+    fpStudents = fopen("Alunos.txt", "r");
+    fpDisciplines = fopen("Disciplinas.txt", "r");
+    if(fpStudents == NULL || fpDisciplines == NULL) {
+        return;
+    }
+    while(fgets(line, sizeof(line), fpStudents) != NULL) {
+        char *token = strtok(line, ",");
+        if(strlen(token) == 5) {
+            Student student;
+            strcpy(student.code, token);
+            strcpy(student.name, strtok(NULL, ","));
+            strcpy(student.cpf, strtok(NULL, ","));
+            student.disciplinesLength = atoi(strtok(NULL, ","));
+            student.currentDisciplines = NULL;
+            pushStudent(&(*headStudent), student);
+            char lineDiscipline[LINE_SIZE];
+            int i = 0;
+            while(i < student.disciplinesLength && fgets(lineDiscipline, sizeof(lineDiscipline), fpStudents) != NULL) {
+                Discipline discipline;
+                // strcpys
+                i++;
+            }
+        }
+    }
+    while(fgets(line, sizeof(line), fpDisciplines) != NULL) {
+        char *token = strtok(line, ",");
+        if(strlen(token) == 4) {
+            Discipline discipline;
+            strcpy(discipline.code, token);
+            strcpy(discipline.name, strtok(NULL, ","));
+            strcpy(discipline.teacher, strtok(NULL, ","));
+            discipline.credits = atoi(strtok(NULL, ","));
+            discipline.currentStudents = NULL;
+            pushDiscipline(&(*headDiscipline), discipline);
+        }
     }
 }
 
