@@ -1,0 +1,6 @@
+0001,Sistemas Digitais,Rotava,4,2,
+21414,Luiz Guilherme Amadi Braga,47927937855,
+21050,Romulo Venancio da Silva,18293846733,
+0002,Matematica Discreta,Veloso,4,2,
+21414,Luiz Guilherme Amadi Braga,47927937855,
+21050,Romulo Venancio da Silva,18293846733,

@@ -1,0 +1,8 @@
+21414,Luiz Guilherme Amadi Braga,47927937855,2,
+0001,Sistemas Digitais,Rotava,4,2023.1,
+0002,Matematica Discreta,Veloso,4,2023.2,
+21050,Romulo Venancio da Silva,18293846733,2,
+0001,Sistemas Digitais,Rotava,4,2022.1,
+0002,Matematica Discreta,Veloso,4,2022.1,
+21051,Pedro Dalcin,176254637644,0,
+Sem disciplinas,
