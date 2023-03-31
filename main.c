@@ -59,7 +59,7 @@ void showStudents(StudentNode *head);
 void appendStudent(StudentNode **head);
 void pushStudent(StudentNode **head, Student student);
 int searchStudent(StudentNode *head);
-int deleteStudent(StudentNode **head);
+int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline);
 void showDisciplinesFromStudentCode(StudentNode *head);
 void showStudentsFromPeriod(StudentNode *head);
 
@@ -69,9 +69,9 @@ int findStudentByName(StudentNode *head);
 int findStudentByCPF(StudentNode *head);
 
 // Specific deleting student functions
-int deleteStudentByCode(StudentNode **head);
-int deleteStudentByName(StudentNode **head);
-int deleteStudentByCPF(StudentNode **head);
+int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline);
+int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline);
+int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline);
 
 // Updates students current disciplines and disciplnes current students also
 int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline);
@@ -82,7 +82,7 @@ void showDisciplines(DisciplineNode *head);
 void appendDiscipline(DisciplineNode **head);
 void pushDiscipline(DisciplineNode **head, Discipline discipline);
 int searchDiscipline(DisciplineNode *head);
-int deleteDiscipline(DisciplineNode **head);
+int deleteDiscipline(DisciplineNode **head, StudentNode **headStudent);
 void showStudentsFromDisciplineCode(DisciplineNode *head);
 void showDisciplinesFromPeriod(StudentNode *head);
 
@@ -92,9 +92,9 @@ int findDisciplineByName(DisciplineNode *head);
 int findDisciplineByTeacher(DisciplineNode *head);
 
 // Specific deleting discipline functions
-int deleteDisciplineByCode(DisciplineNode **head);
-int deleteDisciplineByName(DisciplineNode **head);
-int deleteDisciplineByTeacher(DisciplineNode **head);
+int deleteDisciplineByCode(DisciplineNode **head, StudentNode **headStudent);
+int deleteDisciplineByName(DisciplineNode **head, StudentNode **headStudent);
+int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent);
 
 // Sessions functions
 void initializeSession(StudentNode **headStudent, DisciplineNode **headDiscipline);
@@ -138,10 +138,10 @@ int main() {
                 searchDiscipline(headDiscipline);
                 break;
             case 7: 
-                deleteStudent(&headStudent);
+                deleteStudent(&headStudent, &headDiscipline);
                 break;
             case 8:
-                deleteDiscipline(&headDiscipline);
+                deleteDiscipline(&headDiscipline, &headStudent);
                 break;
             case 9:
                 updateDisciplines(headStudent, headDiscipline);
@@ -371,7 +371,7 @@ int findStudentByCPF(StudentNode *head) {
 }
 
 // Deletes student
-int deleteStudent(StudentNode **head) {
+int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
     char method;
     do {
         printf("\n\nA.\tDeletar aluno por codigo\nB.\tDeletar aluno por nome\nC.\tDeletar aluno por CPF\nD.\tCancelar\n\n");
@@ -380,13 +380,13 @@ int deleteStudent(StudentNode **head) {
         scanf(" %c", &method);
         switch(method) {
         case 'A':
-            deleteStudentByCode(head);
+            deleteStudentByCode(head, headDiscipline);
             break;
         case 'B':
-            deleteStudentByName(head);
+            deleteStudentByName(head, headDiscipline);
             break;
         case 'C':
-            deleteStudentByCPF(head);
+            deleteStudentByCPF(head, headDiscipline);
             break;
         case 'D':
             break;
@@ -398,7 +398,7 @@ int deleteStudent(StudentNode **head) {
 }
 
 // Deletes student by code
-int deleteStudentByCode(StudentNode **head) {
+int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
     char code[STUDENT_CODE_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o codigo do aluno a deletar: ");
@@ -425,6 +425,27 @@ int deleteStudentByCode(StudentNode **head) {
         }
         curr = curr->next;
     }
+    DisciplineNode *auxDiscipline = *headDiscipline;
+    while(*headDiscipline != NULL) {
+        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *prevStudent = NULL;
+        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        while(currStudent != NULL) {
+            if(strcmp(currStudent->info.code, code) == 0) {
+                if(prevStudent == NULL) {
+                    (*headDiscipline)->info.currentStudents = currStudent->next;
+                } else {
+                    prevStudent->next = currStudent->next;
+                }
+                free(currStudent);
+            } else {
+                prevStudent = currStudent;
+            }
+            currStudent = currStudent->next;
+        }
+        (*headDiscipline) = (*headDiscipline)->next;
+    }
+    (*headDiscipline) = auxDiscipline;
     if(counter) {
         printf("\nAlunos deletados: %d\n", counter);
         return 1;
@@ -435,7 +456,7 @@ int deleteStudentByCode(StudentNode **head) {
 }
 
 // Deletes student by name
-int deleteStudentByName(StudentNode **head) {
+int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline) {
     char name[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome do aluno a deletar: ");
@@ -462,6 +483,27 @@ int deleteStudentByName(StudentNode **head) {
         }
         curr = curr->next;
     }
+    DisciplineNode *auxDiscipline = *headDiscipline;
+    while(*headDiscipline != NULL) {
+        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *prevStudent = NULL;
+        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        while(currStudent != NULL) {
+            if(strcmp(currStudent->info.name, name) == 0) {
+                if(prevStudent == NULL) {
+                    (*headDiscipline)->info.currentStudents = currStudent->next;
+                } else {
+                    prevStudent->next = currStudent->next;
+                }
+                free(currStudent);
+            } else {
+                prevStudent = currStudent;
+            }
+            currStudent = currStudent->next;
+        }
+        (*headDiscipline) = (*headDiscipline)->next;
+    }
+    (*headDiscipline) = auxDiscipline;
     if(counter) {
         printf("\nAlunos deletados: %d\n", counter);
         return 1;
@@ -472,7 +514,7 @@ int deleteStudentByName(StudentNode **head) {
 }
 
 // Deletes student by CPF
-int deleteStudentByCPF(StudentNode **head) {
+int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline) {
     char cpf[CPF_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o CPF do aluno a deletar: ");
@@ -499,6 +541,27 @@ int deleteStudentByCPF(StudentNode **head) {
         }
         curr = curr->next;
     }
+    DisciplineNode *auxDiscipline = *headDiscipline;
+    while(*headDiscipline != NULL) {
+        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *prevStudent = NULL;
+        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        while(currStudent != NULL) {
+            if(strcmp(currStudent->info.cpf, cpf) == 0) {
+                if(prevStudent == NULL) {
+                    (*headDiscipline)->info.currentStudents = currStudent->next;
+                } else {
+                    prevStudent->next = currStudent->next;
+                }
+                free(currStudent);
+            } else {
+                prevStudent = currStudent;
+            }
+            currStudent = currStudent->next;
+        }
+        (*headDiscipline) = (*headDiscipline)->next;
+    }
+    (*headDiscipline) = auxDiscipline;
     if(counter) {
         printf("\nAlunos deletados: %d\n", counter);
         return 1;
@@ -790,7 +853,7 @@ int findDisciplineByTeacher(DisciplineNode *head) {
 }
 
 // Deletes discipline
-int deleteDiscipline(DisciplineNode **head) {
+int deleteDiscipline(DisciplineNode **head, StudentNode **headStudent) {
     char method;
     do {
         printf("\n\nA.\tDeletar disciplina por codigo\nB.\tDeletar disciplina por nome\nC.\tDeletar disciplina por professor\nD.\tCancelar\n\n");
@@ -799,13 +862,13 @@ int deleteDiscipline(DisciplineNode **head) {
         scanf(" %c", &method);
         switch(method) {
         case 'A':
-            deleteDisciplineByCode(head);
+            deleteDisciplineByCode(head, headStudent);
             break;
         case 'B':
-            deleteDisciplineByName(head);
+            deleteDisciplineByName(head, headStudent);
             break;
         case 'C':
-            deleteDisciplineByTeacher(head);
+            deleteDisciplineByTeacher(head, headStudent);
             break;
         case 'D':
             break;
@@ -817,7 +880,7 @@ int deleteDiscipline(DisciplineNode **head) {
 }
 
 // Deletes discipline by code
-int deleteDisciplineByCode(DisciplineNode **head) {
+int deleteDisciplineByCode(DisciplineNode **head, StudentNode **headStudent) {
     char code[DISCIPLINE_CODE_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o codigo da disciplina a deletar: ");
@@ -844,6 +907,27 @@ int deleteDisciplineByCode(DisciplineNode **head) {
         }
         curr = curr->next;
     }
+    StudentNode *auxStudent = *headStudent;
+    while(*headStudent != NULL) {
+        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *prevDiscipline = NULL;
+        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        while(currDiscipline != NULL) {
+            if(strcmp(currDiscipline->info.code, code) == 0) {
+                if(prevDiscipline == NULL) {
+                    (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                } else {
+                    prevDiscipline->next = currDiscipline->next;
+                }
+                free(currDiscipline);
+            } else {
+                prevDiscipline = currDiscipline;
+            }
+            currDiscipline = currDiscipline->next;
+        }
+        (*headStudent) = (*headStudent)->next;
+    }
+    (*headStudent) = auxStudent;
     if(counter) {
         printf("\nDisciplinas deletadas: %d\n", counter);
         return 1;
@@ -854,7 +938,7 @@ int deleteDisciplineByCode(DisciplineNode **head) {
 }
 
 // Deletes discipline by name
-int deleteDisciplineByName(DisciplineNode **head) {
+int deleteDisciplineByName(DisciplineNode **head, StudentNode **headStudent) {
     char name[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome da disciplina a deletar: ");
@@ -881,6 +965,27 @@ int deleteDisciplineByName(DisciplineNode **head) {
         }
         curr = curr->next;
     }
+    StudentNode *auxStudent = *headStudent;
+    while(*headStudent != NULL) {
+        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *prevDiscipline = NULL;
+        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        while(currDiscipline != NULL) {
+            if(strcmp(currDiscipline->info.name, name) == 0) {
+                if(prevDiscipline == NULL) {
+                    (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                } else {
+                    prevDiscipline->next = currDiscipline->next;
+                }
+                free(currDiscipline);
+            } else {
+                prevDiscipline = currDiscipline;
+            }
+            currDiscipline = currDiscipline->next;
+        }
+        (*headStudent) = (*headStudent)->next;
+    }
+    (*headStudent) = auxStudent;
     if(counter) {
         printf("\nDisciplinas deletadas: %d\n", counter);
         return 1;
@@ -891,7 +996,7 @@ int deleteDisciplineByName(DisciplineNode **head) {
 }
 
 // Deletes discipline by teacher
-int deleteDisciplineByTeacher(DisciplineNode **head) {
+int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent) {
     char teacher[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome do professor da disciplina a deletar: ");
@@ -918,6 +1023,27 @@ int deleteDisciplineByTeacher(DisciplineNode **head) {
         }
         curr = curr->next;
     }
+    StudentNode *auxStudent = *headStudent;
+    while(*headStudent != NULL) {
+        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *prevDiscipline = NULL;
+        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        while(currDiscipline != NULL) {
+            if(strcmp(currDiscipline->info.teacher, teacher) == 0) {
+                if(prevDiscipline == NULL) {
+                    (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                } else {
+                    prevDiscipline->next = currDiscipline->next;
+                }
+                free(currDiscipline);
+            } else {
+                prevDiscipline = currDiscipline;
+            }
+            currDiscipline = currDiscipline->next;
+        }
+        (*headStudent) = (*headStudent)->next;
+    }
+    (*headStudent) = auxStudent;
     if(counter) {
         printf("\nDisciplinas deletadas: %d\n", counter);
         return 1;
