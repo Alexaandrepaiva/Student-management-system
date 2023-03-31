@@ -1,6 +1,15 @@
 /*
-Authors: Luiz Guilherme Amadi Braga and Alexandre de Paiva Almeida
-University: IME, Rio de Janeiro, Brazil
+
+SISTEMA ACADÊMICO
+
+Disciplina: Laboratório de Programação
+Professor: Cel Duarte
+Linguagem: C
+
+Alunos:
+Luiz Guilherme Amadi Braga (BRAGA), nº 21414
+Alexandre de Paiva Almeida (ALEXANDRE PAIVA), nº 21003 
+
 */
 
 // Includes
@@ -14,7 +23,7 @@ University: IME, Rio de Janeiro, Brazil
 #define NAME_SIZE 101
 #define CPF_SIZE 21
 #define PERIOD_SIZE 7
-#define LINE_SIZE 221
+#define LINE_SIZE 241
 #define endl printf("\n")
 
 // Structs
@@ -24,8 +33,8 @@ typedef struct Student {
     char code[STUDENT_CODE_SIZE];
     char name[NAME_SIZE];
     char cpf[CPF_SIZE];
-    int disciplinesLength;
-    struct DisciplineNode *currentDisciplines;
+    int disciplinesLength; // How many disciplines this student is registered in
+    struct DisciplineNode *currentDisciplines; // Linked list of disciplines this student is registered in
 } Student;
 
 // Student linked list node struct
@@ -41,8 +50,8 @@ typedef struct Discipline {
     char teacher[NAME_SIZE];
     int credits;
     char period[PERIOD_SIZE];
-    int studentsLength;
-    struct StudentNode *currentStudents;
+    int studentsLength; // How many students are registered in this discipline
+    struct StudentNode *currentStudents; // Linked list of students registered in this discipline
 } Discipline;
 
 // Discipline linked list node struct
@@ -51,7 +60,7 @@ typedef struct DisciplineNode {
     struct DisciplineNode *next;
 } DisciplineNode;
 
-// Functions
+// Functions Prototypes
 
 // Student general functions
 Student createStudent();
@@ -172,7 +181,7 @@ int main() {
 
 // ***** Student functions *****
 
-// Creates new student and returns it
+// Creates new student and returns it as struct
 Student createStudent() {
     char code[STUDENT_CODE_SIZE];
     char name[NAME_SIZE];
@@ -434,8 +443,10 @@ int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
             if(strcmp(currStudent->info.code, code) == 0) {
                 if(prevStudent == NULL) {
                     (*headDiscipline)->info.currentStudents = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 } else {
                     prevStudent->next = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 }
                 free(currStudent);
             } else {
@@ -492,8 +503,10 @@ int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline) {
             if(strcmp(currStudent->info.name, name) == 0) {
                 if(prevStudent == NULL) {
                     (*headDiscipline)->info.currentStudents = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 } else {
                     prevStudent->next = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 }
                 free(currStudent);
             } else {
@@ -550,8 +563,10 @@ int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline) {
             if(strcmp(currStudent->info.cpf, cpf) == 0) {
                 if(prevStudent == NULL) {
                     (*headDiscipline)->info.currentStudents = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 } else {
                     prevStudent->next = currStudent->next;
+                    (*headDiscipline)->info.studentsLength--;
                 }
                 free(currStudent);
             } else {
@@ -916,8 +931,10 @@ int deleteDisciplineByCode(DisciplineNode **head, StudentNode **headStudent) {
             if(strcmp(currDiscipline->info.code, code) == 0) {
                 if(prevDiscipline == NULL) {
                     (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 } else {
                     prevDiscipline->next = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 }
                 free(currDiscipline);
             } else {
@@ -974,8 +991,10 @@ int deleteDisciplineByName(DisciplineNode **head, StudentNode **headStudent) {
             if(strcmp(currDiscipline->info.name, name) == 0) {
                 if(prevDiscipline == NULL) {
                     (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 } else {
                     prevDiscipline->next = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 }
                 free(currDiscipline);
             } else {
@@ -1032,8 +1051,10 @@ int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent) 
             if(strcmp(currDiscipline->info.teacher, teacher) == 0) {
                 if(prevDiscipline == NULL) {
                     (*headStudent)->info.currentDisciplines = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 } else {
                     prevDiscipline->next = currDiscipline->next;
+                    (*headStudent)->info.disciplinesLength--;
                 }
                 free(currDiscipline);
             } else {
