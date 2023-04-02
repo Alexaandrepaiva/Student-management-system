@@ -283,7 +283,7 @@ int searchStudent(StudentNode *head) {
             printf("\n");
             break;
         default:
-            printf("Opcao invalida");
+            printf("\nOpcao invalida");
             break;
         }
     } while (method != 'D');
@@ -412,7 +412,7 @@ int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
             printf("\n");
             break;
         default:
-            printf("Opção inválida");
+            printf("\nOpção inválida");
             break;
         }
     } while (method != 'D');
@@ -490,7 +490,7 @@ int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
 int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline) {
     char name[NAME_SIZE];
     spacingLine(35, 1, 2);
-    printf("Insira o nome do aluno a deletar: ");
+    printf("\nInsira o nome do aluno a deletar: ");
     fflush(stdin);
     scanf(" %[^\n]s", name);
     if(*head == NULL) { // Empty list
