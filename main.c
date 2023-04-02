@@ -82,7 +82,7 @@ int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline);
 int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline);
 int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline);
 
-// Updates students current disciplines and disciplnes current students also
+// Updates students current disciplines and also updates discipline's current students
 int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline);
 
 // Discipline general functions
@@ -111,7 +111,7 @@ void writeStudentsFile(StudentNode *head);
 void writeDisciplinesFile(DisciplineNode *head);
 
 // Other functions
-void spacingLine(int Length, int spacingBefore, int spacingAfter);
+void spacingLine(int length, int spacingBefore, int spacingAfter);
 
 int main() {
     int option;
@@ -119,7 +119,7 @@ int main() {
     DisciplineNode *headDiscipline = NULL;
     initializeSession(&headStudent, &headDiscipline);
     spacingLine(35, 1, 2);
-    printf("Seja bem vindo ao GRANITO\n\n");
+    printf("Bem-vindo ao SISTEMA ACADEMICO\n\n");
     do {
         spacingLine(35, 0, 2);
         printf("Menu\n\n");
@@ -181,12 +181,12 @@ int main() {
 
 // ***** Student functions *****
 
-// Creates new student and returns it as struct
+// Creates new student asking user for inputs and returns it as struct
 Student createStudent() {
     char code[STUDENT_CODE_SIZE];
     char name[NAME_SIZE];
     char cpf[CPF_SIZE];
-    Student student;
+    Student *student = (Student*)malloc(sizeof(Student)); // Dynamic allocation
     spacingLine(35, 1, 2);
     printf("Insira o codigo do aluno: ");
     fflush(stdin);
@@ -197,26 +197,28 @@ Student createStudent() {
     printf("Insira o CPF do aluno (somente numeros): ");
     fflush(stdin);
     scanf(" %s", cpf);
-    strcpy(student.code, code);
-    strcpy(student.name, name);
-    strcpy(student.cpf, cpf);
-    student.disciplinesLength = 0;
-    student.currentDisciplines = NULL;
-    return student;
+    strcpy(student->code, code);
+    strcpy(student->name, name);
+    strcpy(student->cpf, cpf);
+    student->disciplinesLength = 0;
+    student->currentDisciplines = NULL;
+    return (*student);
 }
 
 // Appends student at the end of the list
 void appendStudent(StudentNode **head) {
-    StudentNode *newStudent = (StudentNode*)malloc(sizeof(StudentNode));
-    Student student = createStudent();
-    newStudent->info = student;
+    StudentNode *newStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    Student *student = (Student*)malloc(sizeof(Student)); // Student dynamic allocation
+    (*student) = createStudent();
+    newStudent->info = (*student);
     newStudent->next = NULL;
     if(*head == NULL) { // Empty student list
         *head = newStudent;
         printf("\nAluno criado com sucesso!\n\n");
         return;
     }
-    StudentNode *lastNode = *head;
+    StudentNode *lastNode = (StudentNode*)malloc(sizeof(StudentNode)); // Student dynamic allocation
+    lastNode = *head;
     while(lastNode->next != NULL) {
         lastNode = lastNode->next;
     }
@@ -224,16 +226,17 @@ void appendStudent(StudentNode **head) {
     printf("\nAluno criado com sucesso!\n\n");
 }
 
-// Pushes student at the end of the list (student as parameter)
+// Pushes student at the end of the list (student as parameter and prints nothing)
 void pushStudent(StudentNode **head, Student student) {
-    StudentNode *newStudent = (StudentNode*)malloc(sizeof(StudentNode));
+    StudentNode *newStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Dynamic allocation
     newStudent->info = student;
     newStudent->next = NULL;
     if(*head == NULL) { // Empty student list
         *head = newStudent;
         return;
     }
-    StudentNode *lastNode = *head;
+    StudentNode *lastNode = (StudentNode*)malloc(sizeof(StudentNode)); // Student dynamic allocation
+    lastNode = *head;
     while(lastNode->next != NULL) {
         lastNode = lastNode->next;
     }
@@ -275,6 +278,7 @@ int searchStudent(StudentNode *head) {
             findStudentByCPF(head);
             break;
         case 'D':
+            printf("\n");
             break;
         default:
             printf("Opcao invalida");
@@ -283,9 +287,10 @@ int searchStudent(StudentNode *head) {
     } while (method != 'D');
 }
 
-// Finds student by its code
+// Finds student by its code (all students)
 int findStudentByCode(StudentNode *head) {
-    StudentNode *aux = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = head; // Keep track of original head
     char code[STUDENT_CODE_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o codigo do aluno a procurar: ");
@@ -307,7 +312,7 @@ int findStudentByCode(StudentNode *head) {
         }
         head = head->next;
     }
-    head = aux;
+    head = auxStudent;
     if(found) {
         return 1;
     } else {
@@ -316,9 +321,10 @@ int findStudentByCode(StudentNode *head) {
     }
 }
 
-// Finds student by its name
+// Finds student by its name (all students)
 int findStudentByName(StudentNode *head) {
-    StudentNode *aux = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Student dynamic allocation
+    auxStudent = head; // Keep track of original head
     char name[NAME_SIZE];
     printf("Insira o nome do aluno a procurar: ");
     fflush(stdin);
@@ -339,7 +345,7 @@ int findStudentByName(StudentNode *head) {
         head = head->next;
 
     }
-    head = aux;
+    head = auxStudent;
     if(found) {
         return 1;
     } else {
@@ -348,9 +354,10 @@ int findStudentByName(StudentNode *head) {
     }
 }
 
-// Finds student by its CPF
+// Finds student by its CPF (all students)
 int findStudentByCPF(StudentNode *head) {
-    StudentNode *aux = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Student dynamic allocation
+    auxStudent = head; // Keep track of original head
     char cpf[CPF_SIZE];
     printf("Insira o CPF do aluno a procurar: ");
     fflush(stdin);
@@ -370,7 +377,7 @@ int findStudentByCPF(StudentNode *head) {
         }
         head = head->next;
     }
-    head = aux;
+    head = auxStudent;
     if(found) {
         return 1;
     } else {
@@ -398,6 +405,7 @@ int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
             deleteStudentByCPF(head, headDiscipline);
             break;
         case 'D':
+            printf("\n");
             break;
         default:
             printf("Opção inválida");
@@ -406,7 +414,7 @@ int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
     } while (method != 'D');
 }
 
-// Deletes student by code
+// Deletes student by code (all students)
 int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
     char code[STUDENT_CODE_SIZE];
     spacingLine(35, 1, 2);
@@ -418,8 +426,11 @@ int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
         return 0;
     } 
     int counter = 0;
-    StudentNode *prev = NULL;
-    StudentNode *curr = *head;
+    // Deleting student from students linked list
+    StudentNode *prev = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    StudentNode *curr = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.code, code) == 0) {
             if(prev == NULL) {
@@ -434,11 +445,16 @@ int deleteStudentByCode(StudentNode **head, DisciplineNode **headDiscipline) {
         }
         curr = curr->next;
     }
-    DisciplineNode *auxDiscipline = *headDiscipline;
+    // Deleting student from disciplines that this student is registered
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = *headDiscipline;
     while(*headDiscipline != NULL) {
-        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
-        StudentNode *prevStudent = NULL;
-        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *currStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *prevStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        auxStudent = (*headDiscipline)->info.currentStudents;
+        prevStudent = NULL;
+        currStudent = (*headDiscipline)->info.currentStudents;
         while(currStudent != NULL) {
             if(strcmp(currStudent->info.code, code) == 0) {
                 if(prevStudent == NULL) {
@@ -478,8 +494,11 @@ int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline) {
         return 0;
     } 
     int counter = 0;
-    StudentNode *prev = NULL;
-    StudentNode *curr = *head;
+    // Deleting student from students linked list
+    StudentNode *prev = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    StudentNode *curr = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.name, name) == 0) {
             if(prev == NULL) {
@@ -494,11 +513,16 @@ int deleteStudentByName(StudentNode **head, DisciplineNode **headDiscipline) {
         }
         curr = curr->next;
     }
-    DisciplineNode *auxDiscipline = *headDiscipline;
+    // Deleting student from disciplines that this student is registered
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = *headDiscipline;
     while(*headDiscipline != NULL) {
-        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
-        StudentNode *prevStudent = NULL;
-        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *currStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *prevStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        auxStudent = (*headDiscipline)->info.currentStudents;
+        prevStudent = NULL;
+        currStudent = (*headDiscipline)->info.currentStudents;
         while(currStudent != NULL) {
             if(strcmp(currStudent->info.name, name) == 0) {
                 if(prevStudent == NULL) {
@@ -538,8 +562,11 @@ int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline) {
         return 0;
     } 
     int counter = 0;
-    StudentNode *prev = NULL;
-    StudentNode *curr = *head;
+    // Deleting student from students linked list
+    StudentNode *prev = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    StudentNode *curr = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.cpf, cpf) == 0) {
             if(prev == NULL) {
@@ -554,11 +581,16 @@ int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline) {
         }
         curr = curr->next;
     }
-    DisciplineNode *auxDiscipline = *headDiscipline;
+    // Deleting student from disciplines that this student is registered
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = *headDiscipline;
     while(*headDiscipline != NULL) {
-        StudentNode *auxStudent = (*headDiscipline)->info.currentStudents;
-        StudentNode *prevStudent = NULL;
-        StudentNode *currStudent = (*headDiscipline)->info.currentStudents;
+        StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *currStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        StudentNode *prevStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+        auxStudent = (*headDiscipline)->info.currentStudents;
+        prevStudent = NULL;
+        currStudent = (*headDiscipline)->info.currentStudents;
         while(currStudent != NULL) {
             if(strcmp(currStudent->info.cpf, cpf) == 0) {
                 if(prevStudent == NULL) {
@@ -588,7 +620,8 @@ int deleteStudentByCPF(StudentNode **head, DisciplineNode **headDiscipline) {
 
 // Shows every discipline a student is registered
 void showDisciplinesFromStudentCode(StudentNode *head) {
-    StudentNode *auxStudent = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = head; // Keep track of original head
     char code[STUDENT_CODE_SIZE];
     printf("Insira o codigo do aluno: ");
     fflush(stdin);
@@ -600,7 +633,8 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
     int found = 0;
     while(head != NULL) {
         if(strcmp(head->info.code, code) == 0) {
-            DisciplineNode *auxDiscipline = head->info.currentDisciplines;
+            DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+            auxDiscipline = head->info.currentDisciplines; // Keep track of original head
             found = 1;
             printf("\n%s\tAluno: %s\n\n", head->info.code, head->info.name);
             printf("Disciplinas:\n");
@@ -622,7 +656,8 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
 
 // Shows every student registered into a discipline in certain period
 void showStudentsFromPeriod(StudentNode *head) {
-    StudentNode *auxStudent = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = head; // Keep track of original head
     char period[PERIOD_SIZE];
     printf("Insira o periodo: ");
     fflush(stdin);
@@ -634,7 +669,8 @@ void showStudentsFromPeriod(StudentNode *head) {
     int found = 0;
     while(head != NULL) {
         if(head->info.disciplinesLength != 0) {
-            DisciplineNode *auxDiscipline = head->info.currentDisciplines;
+            DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+            auxDiscipline = head->info.currentDisciplines; // Keep track of original head
             while(head->info.currentDisciplines != NULL) {
                 if(strcmp(head->info.currentDisciplines->info.period, period) == 0) {
                     if(!found) {
@@ -666,7 +702,7 @@ Discipline createDiscipline() {
     char name[NAME_SIZE];
     char teacher[NAME_SIZE];
     int credits;
-    Discipline discipline;
+    Discipline *discipline = (Discipline*)malloc(sizeof(Discipline)); // Dynamic allocation
     printf("\nInsira o codigo da disciplina: ");
     fflush(stdin);
     scanf(" %s", code);
@@ -679,19 +715,19 @@ Discipline createDiscipline() {
     printf("Insira a quantidade de creditos da disciplina: ");
     fflush(stdin);
     scanf(" %d", &credits);
-    strcpy(discipline.code, code);
-    strcpy(discipline.name, name);
-    strcpy(discipline.teacher, teacher);
-    strcpy(discipline.period, "----.-");
-    discipline.credits = credits;
-    discipline.studentsLength = 0;
-    discipline.currentStudents = NULL;
-    return discipline;
+    strcpy(discipline->code, code);
+    strcpy(discipline->name, name);
+    strcpy(discipline->teacher, teacher);
+    strcpy(discipline->period, "----.-");
+    discipline->credits = credits;
+    discipline->studentsLength = 0;
+    discipline->currentStudents = NULL;
+    return (*discipline);
 }
 
 // Appends discipline to the end of the list
 void appendDiscipline(DisciplineNode **head) {
-    DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode));
+    DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
     Discipline discipline = createDiscipline();
     newDiscipline->info = discipline;
     newDiscipline->next = NULL;
@@ -700,7 +736,8 @@ void appendDiscipline(DisciplineNode **head) {
         printf("\nDisciplina criada com sucesso!\n\n");
         return;
     }
-    DisciplineNode *lastNode = *head;
+    DisciplineNode *lastNode = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    lastNode = *head;
     while (lastNode->next != NULL) {
         lastNode = lastNode->next;
     }
@@ -708,16 +745,17 @@ void appendDiscipline(DisciplineNode **head) {
     printf("\nDisciplina criada com sucesso!\n\n");
 }
 
-// Pushes discipline to the end of the list (discipline as parameter)
+// Pushes discipline to the end of the list (discipline as parameter and prints nothing)
 void pushDiscipline(DisciplineNode **head, Discipline discipline) {
-    DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode));
+    DisciplineNode *newDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Dynamic allocation
     newDiscipline->info = discipline;
     newDiscipline->next = NULL;
     if(*head == NULL) { // Empty discipline list
         *head = newDiscipline;
         return;
     }
-    DisciplineNode *lastNode = *head;
+    DisciplineNode *lastNode = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    lastNode = *head;
     while (lastNode->next != NULL) {
         lastNode = lastNode->next;
     }
@@ -742,7 +780,6 @@ void showDisciplines(DisciplineNode *head) {
 
 // Searches for discipline
 int searchDiscipline(DisciplineNode *head) {
-    DisciplineNode *aux = head;
     char method;
     do {
         printf("\n\nA.\tProcurar disciplina por codigo\nB.\tProcurar disciplina por nome\nC.\tProcurar disciplina por professor\nD.\tCancelar\n\n");
@@ -760,6 +797,7 @@ int searchDiscipline(DisciplineNode *head) {
             findDisciplineByTeacher(head);
             break;
         case 'D':
+            printf("\n");
             break;
         default:
             printf("Opcao invalida");
@@ -770,7 +808,8 @@ int searchDiscipline(DisciplineNode *head) {
 
 // Finds discipline by code
 int findDisciplineByCode(DisciplineNode *head) {
-    DisciplineNode *aux = head;
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = head;
     char code[DISCIPLINE_CODE_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o codigo da disciplina a procurar: ");
@@ -792,7 +831,7 @@ int findDisciplineByCode(DisciplineNode *head) {
         printf("\n");
         head = head->next;
     }
-    head = aux;
+    head = auxDiscipline;
     if(found) {
         return 1;
     } else {
@@ -803,7 +842,8 @@ int findDisciplineByCode(DisciplineNode *head) {
 
 // Finds discipline by name
 int findDisciplineByName(DisciplineNode *head) {
-    DisciplineNode *aux = head;
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = head;
     char name[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome da disciplina a procurar: ");
@@ -825,7 +865,7 @@ int findDisciplineByName(DisciplineNode *head) {
         printf("\n");
         head = head->next;
     }
-    head = aux;
+    head = auxDiscipline;
     if(found) {
         return 1;
     } else {
@@ -836,7 +876,8 @@ int findDisciplineByName(DisciplineNode *head) {
 
 // Finds discipline by teacher
 int findDisciplineByTeacher(DisciplineNode *head) {
-    DisciplineNode *aux = head;
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    head = auxDiscipline;
     char teacher[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome do professor da disciplina a procurar: ");
@@ -858,7 +899,7 @@ int findDisciplineByTeacher(DisciplineNode *head) {
         printf("\n");
         head = head->next;
     }
-    head = aux;
+    head = auxDiscipline;
     if(found) {
         return 1;
     } else {
@@ -886,9 +927,10 @@ int deleteDiscipline(DisciplineNode **head, StudentNode **headStudent) {
             deleteDisciplineByTeacher(head, headStudent);
             break;
         case 'D':
+            printf("\n");
             break;
         default:
-            printf("Opção inválida");
+            printf("Opcao invalida");
             break;
         }
     } while (method != 'D');
@@ -906,8 +948,11 @@ int deleteDisciplineByCode(DisciplineNode **head, StudentNode **headStudent) {
         return 0;
     } 
     int counter = 0;
-    DisciplineNode *prev = NULL;
-    DisciplineNode *curr = *head;
+    // Deleting discipline from disciplines linked list
+    DisciplineNode *prev = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    DisciplineNode *curr = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.code, code) == 0) {
             if(prev == NULL) {
@@ -922,11 +967,16 @@ int deleteDisciplineByCode(DisciplineNode **head, StudentNode **headStudent) {
         }
         curr = curr->next;
     }
-    StudentNode *auxStudent = *headStudent;
+    // Deleting discipline from possible registrations of students
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = *headStudent;
     while(*headStudent != NULL) {
-        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
-        DisciplineNode *prevDiscipline = NULL;
-        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *currDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *prevDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        auxDiscipline = (*headStudent)->info.currentDisciplines;
+        prevDiscipline = NULL;
+        currDiscipline = (*headStudent)->info.currentDisciplines;
         while(currDiscipline != NULL) {
             if(strcmp(currDiscipline->info.code, code) == 0) {
                 if(prevDiscipline == NULL) {
@@ -966,8 +1016,11 @@ int deleteDisciplineByName(DisciplineNode **head, StudentNode **headStudent) {
         return 0;
     } 
     int counter = 0;
-    DisciplineNode *prev = NULL;
-    DisciplineNode *curr = *head;
+    // Deleting discipline from disciplines linked list
+    DisciplineNode *prev = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    DisciplineNode *curr = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.name, name) == 0) {
             if(prev == NULL) {
@@ -982,11 +1035,16 @@ int deleteDisciplineByName(DisciplineNode **head, StudentNode **headStudent) {
         }
         curr = curr->next;
     }
-    StudentNode *auxStudent = *headStudent;
+    // Deleting discipline from possible registrations of students
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = *headStudent;
     while(*headStudent != NULL) {
-        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
-        DisciplineNode *prevDiscipline = NULL;
-        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *currDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *prevDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        auxDiscipline = (*headStudent)->info.currentDisciplines;
+        prevDiscipline = NULL;
+        currDiscipline = (*headStudent)->info.currentDisciplines;
         while(currDiscipline != NULL) {
             if(strcmp(currDiscipline->info.name, name) == 0) {
                 if(prevDiscipline == NULL) {
@@ -1026,8 +1084,11 @@ int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent) 
         return 0;
     } 
     int counter = 0;
-    DisciplineNode *prev = NULL;
-    DisciplineNode *curr = *head;
+    // Deleting discipline from disciplines linked list
+    DisciplineNode *prev = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    DisciplineNode *curr = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    prev = NULL;
+    curr = *head;
     while(curr != NULL) {
         if(strcmp(curr->info.teacher, teacher) == 0) {
             if(prev == NULL) {
@@ -1042,11 +1103,16 @@ int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent) 
         }
         curr = curr->next;
     }
-    StudentNode *auxStudent = *headStudent;
+    // Deleting discipline from possible registrations of students
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = *headStudent;
     while(*headStudent != NULL) {
-        DisciplineNode *auxDiscipline = (*headStudent)->info.currentDisciplines;
-        DisciplineNode *prevDiscipline = NULL;
-        DisciplineNode *currDiscipline = (*headStudent)->info.currentDisciplines;
+        DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *currDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        DisciplineNode *prevDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+        auxDiscipline = (*headStudent)->info.currentDisciplines;
+        prevDiscipline = NULL;
+        currDiscipline = (*headStudent)->info.currentDisciplines;
         while(currDiscipline != NULL) {
             if(strcmp(currDiscipline->info.teacher, teacher) == 0) {
                 if(prevDiscipline == NULL) {
@@ -1076,7 +1142,8 @@ int deleteDisciplineByTeacher(DisciplineNode **head, StudentNode **headStudent) 
 
 // Shows every student registered in a discipline
 void showStudentsFromDisciplineCode(DisciplineNode *head) {
-    DisciplineNode *auxDiscipline = head;
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = head;
     char code[DISCIPLINE_CODE_SIZE];
     printf("Insira o codigo da disciplina: ");
     fflush(stdin);
@@ -1110,7 +1177,8 @@ void showStudentsFromDisciplineCode(DisciplineNode *head) {
 
 // Shows every discipline from certain period
 void showDisciplinesFromPeriod(StudentNode *head) {
-    StudentNode *auxStudent = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = head;
     char period[PERIOD_SIZE];
     printf("Insira o periodo: ");
     fflush(stdin);
@@ -1218,7 +1286,8 @@ int updateDisciplines(StudentNode *headStudent, DisciplineNode *headDiscipline) 
 
 // ***** Session funcions *****
 void writeStudentsFile(StudentNode *head) {
-    StudentNode *auxStudent = head;
+    StudentNode *auxStudent = (StudentNode*)malloc(sizeof(StudentNode)); // Node dynamic allocation
+    auxStudent = head;
     FILE *fp;
     fp = fopen("Alunos.txt", "w");
     if(fp == NULL) {
@@ -1233,7 +1302,6 @@ void writeStudentsFile(StudentNode *head) {
         if(head->info.disciplinesLength == 0) {
             fprintf(fp, "%s,\n", "Sem disciplinas");
         } else {
-            DisciplineNode *aux = head->info.currentDisciplines;
             while(head->info.currentDisciplines != NULL) {
                 fprintf(fp, "%s,%s,%s,%d,%s,\n", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name, head->info.currentDisciplines->info.teacher, head->info.currentDisciplines->info.credits, head->info.currentDisciplines->info.period);
                 head->info.currentDisciplines = head->info.currentDisciplines->next;
@@ -1246,7 +1314,8 @@ void writeStudentsFile(StudentNode *head) {
 }
 
 void writeDisciplinesFile(DisciplineNode *head) {
-    DisciplineNode *auxDiscipline = head;
+    DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
+    auxDiscipline = head;
     FILE *fp;
     fp = fopen("Disciplinas.txt", "w");
     if(fp == NULL) {
@@ -1261,7 +1330,6 @@ void writeDisciplinesFile(DisciplineNode *head) {
         if(head->info.studentsLength == 0) {
             fprintf(fp, "%s,\n", "Sem alunos") ;
         } else {
-            StudentNode *auxStudent = head->info.currentStudents;
             while(head->info.currentStudents != NULL) {
                 fprintf(fp, "%s,%s,%s,\n", head->info.currentStudents->info.code, head->info.currentStudents->info.name, head->info.currentStudents->info.cpf);
                 head->info.currentStudents = head->info.currentStudents->next;
@@ -1354,13 +1422,13 @@ void initializeSession(StudentNode **headStudent, DisciplineNode **headDisciplin
 }
 
 // Other functions
-void spacingLine(int Length, int spacingBefore, int spacingAfter) {
+void spacingLine(int length, int spacingBefore, int spacingAfter) {
     int i = 0, j = 0, k = 0;
     while (i < spacingBefore) {
         printf("\n");
         i++;
     }
-    while (j < Length) {
+    while (j < length) {
         printf("*");
         j++;
     }

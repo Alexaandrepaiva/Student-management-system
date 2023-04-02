@@ -5,3 +5,5 @@
 0004,Laboratorio de Programacao,Cel Duarte,6,2022.1,
 21051,Pedro Henrique Dalcin,19028938944,1,
 0004,Laboratorio de Programacao,Cel Duarte,6,2023.2,
+21001,Alex Procopio,39028735644,0,
+Sem disciplinas,
