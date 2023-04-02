@@ -263,7 +263,7 @@ void showStudents(StudentNode *head) {
 int searchStudent(StudentNode *head) {
     char method;
     do {
-        printf("\n\nA.\tProcurar aluno por codigo\nB.\tProcurar aluno por nome\nC.\tProcurar aluno por CPF\nD.\tCancelar\n\n");
+        printf("\nA.\tProcurar aluno por codigo\nB.\tProcurar aluno por nome\nC.\tProcurar aluno por CPF\nD.\tCancelar\n\n");
         printf("Como deseja procurar o aluno? ");
         fflush(stdin);
         scanf(" %c", &method);
