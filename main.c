@@ -267,6 +267,8 @@ int searchStudent(StudentNode *head) {
         printf("Como deseja procurar o aluno? ");
         fflush(stdin);
         scanf(" %c", &method);
+        // Clear the input buffer
+        while(getchar() != '\n');
         switch(method) {
         case 'A':
             findStudentByCode(head);
@@ -394,6 +396,8 @@ int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
         printf("Como deseja deletar o aluno? ");
         fflush(stdin);
         scanf(" %c", &method);
+        // Clear the input buffer
+        while(getchar() != '\n');
         switch(method) {
         case 'A':
             deleteStudentByCode(head, headDiscipline);
@@ -786,6 +790,8 @@ int searchDiscipline(DisciplineNode *head) {
         printf("Como deseja procurar o disciplina? ");
         fflush(stdin);
         scanf(" %c", &method);
+        // Clear the input buffer
+        while(getchar() != '\n');
         switch(method) {
         case 'A':
             findDisciplineByCode(head);
@@ -877,7 +883,7 @@ int findDisciplineByName(DisciplineNode *head) {
 // Finds discipline by teacher
 int findDisciplineByTeacher(DisciplineNode *head) {
     DisciplineNode *auxDiscipline = (DisciplineNode*)malloc(sizeof(DisciplineNode)); // Node dynamic allocation
-    head = auxDiscipline;
+    auxDiscipline = head;
     char teacher[NAME_SIZE];
     spacingLine(35, 1, 2);
     printf("Insira o nome do professor da disciplina a procurar: ");
@@ -916,6 +922,8 @@ int deleteDiscipline(DisciplineNode **head, StudentNode **headStudent) {
         printf("Como deseja deletar a disciplina? ");
         fflush(stdin);
         scanf(" %c", &method);
+        // Clear the input buffer
+        while(getchar() != '\n');
         switch(method) {
         case 'A':
             deleteDisciplineByCode(head, headStudent);
