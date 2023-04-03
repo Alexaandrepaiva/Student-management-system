@@ -172,7 +172,7 @@ int main() {
                 writeDisciplinesFile(headDiscipline);
                 break;
             default:
-                printf("Opcao invalida\n");
+                printf("Opcao invalida\n\n");
                 break;
         }
     } while(option != 14);
@@ -412,7 +412,7 @@ int deleteStudent(StudentNode **head, DisciplineNode **headDiscipline) {
             printf("\n");
             break;
         default:
-            printf("\nOpção inválida");
+            printf("\nOpcao invalida");
             break;
         }
     } while (method != 'D');
@@ -643,7 +643,7 @@ void showDisciplinesFromStudentCode(StudentNode *head) {
             printf("\n%s\tAluno: %s\n\n", head->info.code, head->info.name);
             printf("Disciplinas:\n");
             if(head->info.currentDisciplines == NULL) {
-                printf("Nao ha disciplinas\n");
+                printf("Nao ha disciplinas\n\n");
                 return;
             }
             while(head->info.currentDisciplines != NULL) {
@@ -693,7 +693,7 @@ void showStudentsFromPeriod(StudentNode *head) {
     head = auxStudent;
     printf("\n\n");
     if(!found) {
-        printf("\nNao ha alunos no periodo selecionado\n");
+        printf("Nao ha alunos no periodo selecionado\n\n");
     }
 }
 
@@ -1168,7 +1168,7 @@ void showStudentsFromDisciplineCode(DisciplineNode *head) {
             printf("\n%s\tDisciplina: %s\n\n", head->info.code, head->info.name);
             printf("Alunos:\n");
             if(head->info.currentStudents == NULL) {
-                printf("Nao ha alunos\n");
+                printf("Nao ha alunos\n\n");
                 return;
             }
             while(head->info.currentStudents != NULL) {
@@ -1192,20 +1192,30 @@ void showDisciplinesFromPeriod(StudentNode *head) {
     fflush(stdin);
     scanf(" %s", period);
     if(head == NULL) { // Empty list
-        printf("Nao ha disciplinas cadastradas em periodos");
+        printf("Nao ha disciplinas cadastradas em periodos\n\n");
         return;
     }
     int found = 0;
     while(head != NULL) {
         if(head->info.disciplinesLength != 0) {
             DisciplineNode *auxDiscipline = head->info.currentDisciplines;
+            char seen[50][DISCIPLINE_CODE_SIZE]; // Just to avoid duplicates
             while(head->info.currentDisciplines != NULL) {
                 if(strcmp(head->info.currentDisciplines->info.period, period) == 0) {
+                    strcpy(seen[found], head->info.currentDisciplines->info.code);
                     if(!found) {
                         printf("\nDisciplinas:\n\n");
                     }
-                    printf("\n%s\tDisciplina: %s", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name);
-                    found = 1;
+                    int haveSeen = 0;
+                    for(int i = 0; i < found; i++) {
+                        if(strcmp(seen[i], head->info.currentDisciplines->info.code) == 0) {
+                            haveSeen = 1;
+                        }
+                    }
+                    if(!haveSeen) {
+                        printf("\n%s\tDisciplina: %s", head->info.currentDisciplines->info.code, head->info.currentDisciplines->info.name);
+                    }
+                    found++;
                 }
                 head->info.currentDisciplines = head->info.currentDisciplines->next;
             }
@@ -1302,7 +1312,7 @@ void writeStudentsFile(StudentNode *head) {
         return;
     }
     if(head == NULL) { // Empty list
-        fprintf(fp, "%s,", "Nao ha alunos cadastrados");
+        fprintf(fp, "%s", "Nao ha alunos cadastrados\n");
         return;
     }
     while(head != NULL) {
@@ -1330,7 +1340,7 @@ void writeDisciplinesFile(DisciplineNode *head) {
         return;
     }
     if(head == NULL) {
-        fprintf(fp, "%s,", "Nao ha disciplinas cadastradas");
+        fprintf(fp, "%s", "Nao ha disciplinas cadastradas\n");
         return;
     }
     while(head != NULL) {
